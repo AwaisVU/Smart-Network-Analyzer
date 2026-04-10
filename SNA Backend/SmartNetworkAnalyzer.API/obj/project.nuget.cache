@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "xR5HcpTAWUI=",
+  "success": true,
+  "projectFilePath": "/Users/awaisch/Smart Network Analyzer/SNA Backend/SmartNetworkAnalyzer.API/SmartNetworkAnalyzer.API.csproj",
+  "expectedPackageFiles": [
+    "/Users/awaisch/.nuget/packages/microsoft.aspnetcore.openapi/10.0.5/microsoft.aspnetcore.openapi.10.0.5.nupkg.sha512",
+    "/Users/awaisch/.nuget/packages/microsoft.openapi/2.0.0/microsoft.openapi.2.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
