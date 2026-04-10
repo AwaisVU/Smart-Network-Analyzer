@@ -1,4 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
+using SmartNetworkAnalyzer.API.Data;
 using SmartNetworkAnalyzer.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Enable controller support (required for APIs)
 builder.Services.AddControllers();
+
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
 // Register your custom services
 // Scoped = one instance per HTTP request
