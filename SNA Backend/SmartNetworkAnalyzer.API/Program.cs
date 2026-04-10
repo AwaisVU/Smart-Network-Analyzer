@@ -1,41 +1,60 @@
+using SmartNetworkAnalyzer.API.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+// =======================================================
+// 🔹 SECTION 1: SERVICES (Dependency Injection Container)
+// =======================================================
+// Register all dependencies and framework services here.
+// This is where you tell ASP.NET what your app "has".
+
+// Enable controller support (required for APIs)
+builder.Services.AddControllers();
+
+// Register your custom services
+// Scoped = one instance per HTTP request
+builder.Services.AddScoped<IPingService, PingService>();
+
+// OpenAPI / Swagger (for API documentation/testing)
 builder.Services.AddOpenApi();
+
+
+// =======================================================
+// 🔹 SECTION 2: BUILD APPLICATION
+// =======================================================
+// This compiles everything above into a runnable app.
+// After this point, you CANNOT add more services.
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
+// =======================================================
+// 🔹 SECTION 3: MIDDLEWARE PIPELINE (Request Flow)
+// =======================================================
+// Middleware are executed in order (top → bottom).
+// Each middleware can inspect/modify the request/response.
+
+// Only enable OpenAPI in development
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
+// Redirect HTTP requests to HTTPS
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+// =======================================================
+// 🔹 SECTION 4: ENDPOINT MAPPING
+// =======================================================
+// This connects incoming HTTP requests to controllers.
+
+app.MapControllers();
+
+
+// =======================================================
+// 🔹 SECTION 5: RUN APPLICATION
+// =======================================================
+// Starts the web server and begins listening for requests.
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
