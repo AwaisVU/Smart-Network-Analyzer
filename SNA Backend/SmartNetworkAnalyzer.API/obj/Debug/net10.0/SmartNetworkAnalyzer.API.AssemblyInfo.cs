@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartNetworkAnalyzer.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2f8aa7abbd3b0415cfc62f3bee8fa879b91704fe")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ebbf39a3096738da9a12c04e99b457a0b275afb4")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartNetworkAnalyzer.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartNetworkAnalyzer.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
