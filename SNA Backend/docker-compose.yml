@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: sna-postgres
+    environment:
+      POSTGRES_DB: sna
+      POSTGRES_USER: sna_user
+      POSTGRES_PASSWORD: sna_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - sna_pgdata:/var/lib/postgresql/data
+
+volumes:
+  sna_pgdata:
