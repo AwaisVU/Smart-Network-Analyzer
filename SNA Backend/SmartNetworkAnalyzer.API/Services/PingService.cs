@@ -32,7 +32,7 @@ public class PingService : IPingService
                     LatencyMs = 0,
                     Success = false,
                     Timestamp = DateTime.UtcNow,
-                    Message = "Ping Failed"
+                    Message = reply.Status.ToString()
                 };
             }
         }
