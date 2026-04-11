@@ -39,5 +39,29 @@ namespace SmartNetworkAnalyzer.API.Controllers
 
             return StatusCode(201);
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login (LoginRequest request)
+        {
+            if(string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
+            {
+                return BadRequest("Email and password are required to login");
+            }
+
+            var normalizedEmail = request.Email.Trim().ToLower();
+
+            var user = await _userManager.FindByEmailAsync(normalizedEmail);
+            if(user == null)
+            {
+                return Unauthorized("No Email Found");
+            }
+            
+            var isPassValid = await _userManager.CheckPasswordAsync(user, request.Password);
+            if (!isPassValid)
+            {
+                return Unauthorized("Incorrect Password!");
+            }
+            return Ok();
+        }
     }
 }
