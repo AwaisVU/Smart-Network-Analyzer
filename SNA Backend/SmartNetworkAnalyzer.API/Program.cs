@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
@@ -16,6 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+builder.Services.AddIdentityCore<IdentityUser>(options => {options.User.RequireUniqueEmail = true;}).AddEntityFrameworkStores<ApplicationDbContext>();
 
 // Register your custom services
 // Scoped = one instance per HTTP request
