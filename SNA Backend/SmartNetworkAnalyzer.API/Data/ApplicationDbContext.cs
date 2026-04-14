@@ -1,6 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using SmartNetworkAnalyzer.API.Entities;
 
 namespace SmartNetworkAnalyzer.API.Data;
 
@@ -10,4 +11,8 @@ public class ApplicationDbContext : IdentityDbContext
     {
         
     }
+
+    public DbSet<DiagnosticSession> DiagnosticSessions {get; set;}
+    public DbSet<ProbeResult> ProbeResults { get; set; }
+
 }
