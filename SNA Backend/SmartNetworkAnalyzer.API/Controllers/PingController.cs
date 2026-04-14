@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmartNetworkAnalyzer.API.Models;
@@ -7,6 +8,7 @@ namespace SmartNetworkAnalyzer.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PingController : ControllerBase
     {
         private readonly IPingService _pingService;
