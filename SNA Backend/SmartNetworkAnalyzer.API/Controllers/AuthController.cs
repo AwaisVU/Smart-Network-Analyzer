@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using SmartNetworkAnalyzer.API.Contracts;
 using Microsoft.AspNetCore.Mvc;
+using SmartNetworkAnalyzer.API.Services;
 
 namespace SmartNetworkAnalyzer.API.Controllers
 {
@@ -10,9 +11,11 @@ namespace SmartNetworkAnalyzer.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager;
-        public AuthController(UserManager<IdentityUser> userManager)
+        private readonly IJwtTokenService _tokenService;
+        public AuthController(UserManager<IdentityUser> userManager, IJwtTokenService tokenService)
         {
             _userManager = userManager;
+            _tokenService = tokenService;
         }
 
         [HttpPost("register")]
@@ -61,7 +64,9 @@ namespace SmartNetworkAnalyzer.API.Controllers
             {
                 return Unauthorized("Incorrect Password!");
             }
-            return Ok();
+
+            var (token, expiresAtUtc) = _tokenService.CreateToken(user);
+            return Ok(new LoginResponse(token, expiresAtUtc));
         }
     }
 }

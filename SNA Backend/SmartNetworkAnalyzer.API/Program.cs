@@ -1,6 +1,8 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using SmartNetworkAnalyzer.API.Data;
 using SmartNetworkAnalyzer.API.Services;
@@ -15,13 +17,32 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Enable controller support (required for APIs)
 builder.Services.AddControllers();
-
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddIdentityCore<IdentityUser>(options => {options.User.RequireUniqueEmail = true;}).AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        };
+    });
+
+builder.Services.AddAuthorization();
+
 
 // Register your custom services
 // Scoped = one instance per HTTP request
 builder.Services.AddScoped<IPingService, PingService>();
+builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 
 // OpenAPI / Swagger (for API documentation/testing)
 builder.Services.AddOpenApi();
@@ -51,7 +72,8 @@ if (app.Environment.IsDevelopment())
 
 // Redirect HTTP requests to HTTPS
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
+app.UseAuthorization();
 
 // =======================================================
 // 🔹 SECTION 4: ENDPOINT MAPPING
