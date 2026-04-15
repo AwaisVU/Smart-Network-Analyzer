@@ -1,6 +1,6 @@
 using System;
 
-namespace SmartNetworkAnalyzer.API.Models;
+namespace SmartNetworkAnalyzer.API.Contracts;
 
 public class PingResult
 {
@@ -10,3 +10,4 @@ public class PingResult
     public DateTime Timestamp { get; set; }
     public string Message { get; set; } = string.Empty;
 }
+

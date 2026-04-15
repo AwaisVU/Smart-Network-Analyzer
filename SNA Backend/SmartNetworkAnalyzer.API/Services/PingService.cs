@@ -1,5 +1,5 @@
 using System;
-using SmartNetworkAnalyzer.API.Models;
+using SmartNetworkAnalyzer.API.Contracts;
 using System.Net.NetworkInformation;
 
 namespace SmartNetworkAnalyzer.API.Services;

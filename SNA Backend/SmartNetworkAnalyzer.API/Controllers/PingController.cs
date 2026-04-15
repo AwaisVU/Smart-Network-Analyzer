@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SmartNetworkAnalyzer.API.Models;
+using SmartNetworkAnalyzer.API.Contracts;
 using SmartNetworkAnalyzer.API.Services;
 
 namespace SmartNetworkAnalyzer.API.Controllers
