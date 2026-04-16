@@ -44,5 +44,45 @@ namespace SmartNetworkAnalyzer.API.Controllers
 
             return Created($"/api/diagnostics/sessions/{session.Id}", new CreateSessionResponse(session.Id));
         }
+
+
+        //Addig Probe Result taken from AddProbeResultRequest
+        [HttpPost("sessions/{sessionId:guid}/results")]
+        public async Task<IActionResult> AddProbeResult(Guid sessionId, AddProbeResultRequest request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized();
+            }
+
+            var session = await _db.DiagnosticSessions.FindAsync(sessionId);
+            if(session is null)
+            {
+                return NotFound();
+            }
+            if(session.UserId != userId)
+            {
+                return NotFound();
+            }
+
+            var probe = new ProbeResult
+            {
+                Id = Guid.NewGuid(),
+                SessionId = sessionId,
+                TimestampUtc = request.TimestampUtc ?? DateTime.UtcNow,
+                ProbeType = request.ProbeType,
+                Success = request.Success,
+                LatencyMs = request.LatencyMs,
+                Error = request.Error
+
+            };
+
+            _db.ProbeResults.Add(probe);
+            await _db.SaveChangesAsync();
+
+
+            return StatusCode(201);
+        }
     }
 }
