@@ -134,5 +134,98 @@ namespace SmartNetworkAnalyzer.API.Controllers
             return Ok(response);
         }
 
+        [HttpGet("sessions/{sessionId:guid}/summary")]
+        public async Task<IActionResult> GetSummary (Guid sessionId, string mode)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if(userId is null)
+            {
+                return Unauthorized();
+            }
+
+            var session = await _db.DiagnosticSessions.FindAsync(sessionId);
+            if(session is null)
+            {
+                return NotFound();
+            }
+
+            if(session.UserId != userId)
+            {
+                return NotFound();
+            }
+
+            var probeRows = await _db.ProbeResults
+                .Where(x=>x.SessionId == sessionId)
+                .OrderBy(x=>x.TimestampUtc)
+                .ToListAsync();
+
+            //Manual Probe Logic
+            var total = probeRows.Count();
+            var failures = probeRows.Count(x=>x.Success == false);
+            var avgLatency = probeRows.Where(x=>x.LatencyMs.HasValue)
+                                        .Select(x=>x.LatencyMs!.Value)
+                                        .DefaultIfEmpty(0)
+                                        .Average();
+
+            double failureRate;
+            if(total > 0)
+            {
+                failureRate = (double)failures / total;
+            }
+            else
+            {
+                failureRate = 0;
+            }
+
+            //Customer Guidelines
+            string userMessage;
+            List<string> userNextSteps;
+
+            if(total == 0)
+            {
+                userMessage = "Not enough data yet. Run the test again.";
+                userNextSteps = new List<string>();
+            }
+            else if (failureRate > 0.2)
+            {
+                userMessage = "Your connection looks unstable right now.";
+                userNextSteps = new List<string>
+                {
+                    "1. Restart your router and wait 2 minutes", 
+                    "2. Move closer to the Wi-Fi router and retry", 
+                    "3. Try again from another device"
+                };
+            }
+            else if (avgLatency >= 250)
+            {
+                userMessage = "Your connection looks slow right now.";
+                userNextSteps = new List<string>
+                {
+                    "1. Close background downloads or streaming apps", 
+                    "Restart your router", 
+                    "Try switching Wi-Fi bands (2.4GHz / 5GHz)"
+                };
+            }
+            else
+            {
+                userMessage = "Great! Your network connection is stable.";
+                userNextSteps = new List<string>
+                {
+                    "No action needed, connection is healthy"
+                };
+            }
+
+            //Finally, populate DTO
+            var summary = new SessionSummaryResponse
+            {
+                SessionId = sessionId,
+                Mode = "home",
+                Message = userMessage,
+                NextSteps = userNextSteps,
+            };
+
+            return Ok(summary);
+        }
+
     }
 }
