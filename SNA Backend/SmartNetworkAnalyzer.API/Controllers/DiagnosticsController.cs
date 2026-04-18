@@ -135,12 +135,21 @@ namespace SmartNetworkAnalyzer.API.Controllers
         }
 
         [HttpGet("sessions/{sessionId:guid}/summary")]
-        public async Task<IActionResult> GetSummary (Guid sessionId, string mode)
+        public async Task<IActionResult> GetSummary (Guid sessionId, string mode = "home")
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if(userId is null)
+            if(string.IsNullOrWhiteSpace(userId))
             {
                 return Unauthorized();
+            }
+
+            if (string.IsNullOrWhiteSpace(mode))
+            {
+                return BadRequest();
+            }
+            if(mode != "home")
+            {
+                return BadRequest("Only home mode is supported right now");
             }
 
             var session = await _db.DiagnosticSessions.FindAsync(sessionId);
@@ -191,9 +200,9 @@ namespace SmartNetworkAnalyzer.API.Controllers
                 userMessage = "Your connection looks unstable right now.";
                 userNextSteps = new List<string>
                 {
-                    "1. Restart your router and wait 2 minutes", 
-                    "2. Move closer to the Wi-Fi router and retry", 
-                    "3. Try again from another device"
+                    "Restart your router and wait 2 minutes", 
+                    "Move closer to the Wi-Fi router and retry", 
+                    "Try again from another device"
                 };
             }
             else if (avgLatency >= 250)
@@ -201,7 +210,7 @@ namespace SmartNetworkAnalyzer.API.Controllers
                 userMessage = "Your connection looks slow right now.";
                 userNextSteps = new List<string>
                 {
-                    "1. Close background downloads or streaming apps", 
+                    "Close background downloads or streaming apps", 
                     "Restart your router", 
                     "Try switching Wi-Fi bands (2.4GHz / 5GHz)"
                 };
@@ -219,7 +228,7 @@ namespace SmartNetworkAnalyzer.API.Controllers
             var summary = new SessionSummaryResponse
             {
                 SessionId = sessionId,
-                Mode = "home",
+                Mode = mode,
                 Message = userMessage,
                 NextSteps = userNextSteps,
             };
