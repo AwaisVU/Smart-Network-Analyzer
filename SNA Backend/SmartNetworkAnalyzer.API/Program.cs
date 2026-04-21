@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using SmartNetworkAnalyzer.API.Data;
+using SmartNetworkAnalyzer.API.Hubs;
 using SmartNetworkAnalyzer.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +38,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddSignalR();
 
 
 // Register your custom services
@@ -80,6 +82,7 @@ app.UseAuthorization();
 // =======================================================
 // This connects incoming HTTP requests to controllers.
 
+app.MapHub<DiagnosticsHub>("/hubs/diagnostics");
 app.MapControllers();
 
 
