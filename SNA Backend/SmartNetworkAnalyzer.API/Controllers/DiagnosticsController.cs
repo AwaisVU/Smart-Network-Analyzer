@@ -242,12 +242,12 @@ namespace SmartNetworkAnalyzer.API.Controllers
                     Failures = failures,
                     FailureRate = failureRate,
                     AvgLatencyMs = avgLatency,
-
+                    Message = userMessage
 
                 };
 
                 return Ok(summaryPro);
-                
+
             }
 
             return BadRequest("mode must be home or pro");
