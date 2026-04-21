@@ -142,15 +142,7 @@ namespace SmartNetworkAnalyzer.API.Controllers
             {
                 return Unauthorized();
             }
-
-            if (string.IsNullOrWhiteSpace(mode))
-            {
-                return BadRequest();
-            }
-            if(mode != "home")
-            {
-                return BadRequest("Only home mode is supported right now");
-            }
+            
 
             var session = await _db.DiagnosticSessions.FindAsync(sessionId);
             if(session is null)
@@ -224,16 +216,41 @@ namespace SmartNetworkAnalyzer.API.Controllers
                 };
             }
 
-            //Finally, populate DTO
-            var summary = new SessionSummaryResponse
-            {
-                SessionId = sessionId,
-                Mode = mode,
-                Message = userMessage,
-                NextSteps = userNextSteps,
-            };
 
-            return Ok(summary);
+            //Conditional Response based on summary type
+
+            if (mode == "home")
+            {
+                var summaryHome = new SessionSummaryResponse
+                {
+                    SessionId = sessionId,
+                    Mode = "home",
+                    Message = userMessage,
+                    NextSteps = userNextSteps,
+                };
+
+                return Ok(summaryHome);
+            }
+
+            if (mode == "pro")
+            {
+                var summaryPro = new SessionProSummaryResponse {
+
+                    SessionId = sessionId,
+                    Mode = "pro",
+                    Total = total,
+                    Failures = failures,
+                    FailureRate = failureRate,
+                    AvgLatencyMs = avgLatency,
+
+
+                };
+
+                return Ok(summaryPro);
+                
+            }
+
+            return BadRequest("mode must be home or pro");
         }
 
     }
